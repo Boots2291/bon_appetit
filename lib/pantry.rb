@@ -44,6 +44,19 @@ class Pantry
   def add_to_cookbook(recipe)
     cookbook << recipe
   end
+
+  def what_can_i_make
+    can_make = []
+    cookbook.each do |recipe|
+      recipe.ingredients.each do |item, quantity|
+        if stock.has_key?(item) && stock[item] > quantity
+          can_make << recipe.name
+        end
+      end
+    end
+    can_make.uniq
+  end
+
 end
 
 # pantry = Pantry.new
