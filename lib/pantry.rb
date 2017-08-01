@@ -16,7 +16,7 @@ class Pantry
 
   def restock(item, quantity)
     if stock.has_key?(item)
-      stock[item] + quantity
+      stock[item] += quantity
     else
       stock[item] = quantity
     end
