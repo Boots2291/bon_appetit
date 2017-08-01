@@ -138,7 +138,7 @@ class PantryTest < Minitest::Test
                 "Flour"          => [{quantity: 5, units: "Centi-Units"},
                                     {quantity: 50, units: "Universal Units"}]}
 
-    assert_equal expected, pantry.convert_units
+    assert_equal expected, pantry.convert_units(r)
   end
 
 end

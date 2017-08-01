@@ -27,18 +27,35 @@ class Pantry
   def convert_units(recipe)
     recipe.ingredients.each do |item, amount|
       converted = {}
-      if amount > 100
-        converted[:quantity] = (amount / 100).to_i
-        converted[:units] = "Centi-Units"
-      elsif amount < 1
-        converted[:quantity] = (amount * 1000).to_i
-        converted[:units] = "Milli-Units"
-      else
-        converted[:quantity] = amount
-        converted[:units] = "Universal Units"
-      end
+        if amount > 100
+          convert_to_centi(amount, converted)
+        elsif amount > 1 && (amount % 100).class == Float
+          decimal = amount % 1
+          integer = amount.to_i
+          convert_to_centi(decimal, converted)
+          return_universal_units(integer, converted)
+        elsif amount < 1
+          convert_to_milli(amount, converted)
+        else
+          return_universal_units(amount, converted)
+        end
       recipe.ingredients[item] = converted
     end
+  end
+
+  def convert_to_centi(amount, converted)
+    converted[:quantity] = (amount / 100).to_i
+    converted[:units] = "Centi-Units"
+  end
+
+  def convert_to_milli(amount, converted)
+    converted[:quantity] = (amount * 1000).to_i
+    converted[:units] = "Milli-Units"
+  end
+
+  def return_universal_units(amount, converted)
+    converted[:quantity] = amount
+    converted[:units] = "Universal Units"
   end
 
   def add_to_cookbook(recipe)
@@ -64,27 +81,17 @@ class Pantry
   def how_many_can_i_make
     can_make = {}
     cookbook.each do |recipe|
-      recipe.ingredients.each do |item, quantity|
-        if stock.has_key?(item) && stock[item] > quantity
-          can_make[recipe.name] = stock[item] / quantity
-        end
-      end
+      compare_ingredients_to_quantities(recipe, can_make)
     end
     can_make
   end
 
-end
+  def compare_ingredients_to_quantities(recipe, can_make)
+    recipe.ingredients.each do |item, quantity|
+      if stock.has_key?(item) && stock[item] > quantity
+        can_make[recipe.name] = stock[item] / quantity
+      end
+    end
+  end
 
-# Building our recipe
-# r = Recipe.new("Spicy Cheese Pizza")
-# r.add_ingredient("Cayenne Pepper", 1.025)
-# r.add_ingredient("Cheese", 75)
-# r.add_ingredient("Flour", 550)
-# pantry = Pantry.new
-# # Convert units for this recipe
-# pantry.convert_units(r)
-# => {"Cayenne Pepper" => [{quantity: 25, units: "Milli-Units"},
-#                          {quantity: 1, units: "Universal Units"}],
-#     "Cheese"         => [{quantity: 75, units: "Universal Units"}],
-#     "Flour"          => [{quantity: 5, units: "Centi-Units"},
-#                          {quantity: 50, units: "Universal Units"}]}
+end
