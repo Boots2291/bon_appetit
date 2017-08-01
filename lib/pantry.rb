@@ -48,12 +48,12 @@ class Pantry
   def what_can_i_make
     can_make = []
     cookbook.each do |recipe|
-      get_ingredients(recipe)
+      compare_ingredients(recipe, can_make)
     end
     can_make.uniq
   end
 
-  def get_ingredients(recipe)
+  def compare_ingredients(recipe, can_make)
     recipe.ingredients.each do |item, quantity|
       if stock.has_key?(item) && stock[item] > quantity
         can_make << recipe.name
@@ -63,32 +63,14 @@ class Pantry
 
   def how_many_can_i_make
     can_make = {}
-
+    cookbook.each do |recipe|
+      recipe.ingredients.each do |item, quantity|
+        if stock.has_key?(item) && stock[item] > quantity
+          can_make[recipe.name] = stock[item] / quantity
+        end
+      end
+    end
+    can_make
   end
 
 end
-
-# pantry = Pantry.new
-# # Building our recipe
-# r1 = Recipe.new("Cheese Pizza")
-# r1.add_ingredient("Cheese", 20)
-# r1.add_ingredient("Flour", 20)
-# r2 = Recipe.new("Brine Shot")
-# r2.add_ingredient("Brine", 10)
-# r3 = Recipe.new("Peanuts")
-# r3.add_ingredient("Raw nuts", 10)
-# r3.add_ingredient("Salt", 10)
-# # Adding the recipe to the cookbook
-# pantry.add_to_cookbook(r1)
-# pantry.add_to_cookbook(r2)
-# pantry.add_to_cookbook(r3)
-# # Stock some ingredients
-# pantry.restock("Cheese", 10)
-# pantry.restock("Flour", 20)
-# pantry.restock("Brine", 40)
-# pantry.restock("Raw nuts", 20)
-# pantry.restock("Salt", 20)
-# # What can i make?
-# pantry.what_can_i_make # => ["Brine Shot", "Peanuts"]
-# # How many can i make?
-# pantry.how_many_can_i_make # => {"Brine Shot" => 4, "Peanuts" => 2}

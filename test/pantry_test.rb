@@ -100,7 +100,7 @@ class PantryTest < Minitest::Test
     assert_equal expected, pantry.what_can_i_make
   end
 
-  def test_it_can_check_what_it_can_make
+  def test_it_can_check_how_many_it_can_make
     pantry = Pantry.new
     r1 = Recipe.new("Cheese Pizza")
     r1.add_ingredient("Cheese", 20)
